@@ -1,0 +1,61 @@
+{
+    "name": "ingruz/holdor",
+    "type": "library",
+    "description": "Utility library to handle JWT auth with Laravel",
+    "keywords": [
+        "Ingruz",
+        "Holdor",
+        "Laravel",
+        "JWT",
+        "auth"
+    ],
+    "homepage": "https://github.com/ingro/Holdor",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ingro",
+            "email": "ingro85@gmail.com",
+            "homepage": "http://blog.ingruz.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.3 || >=8.0",
+        "illuminate/support": "^8.0",
+        "lcobucci/jwt": "^3.3"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0.0",
+        "phpunit/phpunit": "^8.4 || ^9.0",
+        "squizlabs/php_codesniffer": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ingruz\\Holdor\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ingruz\\Holdor\\Test\\": "tests",
+            "App\\": "tests/App"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
+        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Ingruz\\Holdor\\HoldorServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
