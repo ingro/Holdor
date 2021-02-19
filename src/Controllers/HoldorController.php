@@ -1,12 +1,15 @@
 <?php
 
-namespace Ingruz\Holdor\Controllers\HoldorController;
+namespace Ingruz\Holdor\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Ingruz\Holdor\Exceptions\JWTMismatchException;
 use Ingruz\Holdor\Helpers\JWTHelper;
 
 abstract class HoldorController extends Controller {
@@ -23,9 +26,9 @@ abstract class HoldorController extends Controller {
         $this->JWTHelper = $JWTHelper;
     }
 
-    public function issueToken(Request $request) 
+    public function issueToken(Request $request): JsonResponse
     {
-        $user = $this->getUserByRequest($request);
+        $user = $this->getUserFromRequest($request);
 
         if (! $user) {
             return response()->json(['error' => 'Invalid credentials'], 400);
@@ -33,10 +36,10 @@ abstract class HoldorController extends Controller {
 
         $payload = $this->generateResponsePayload($user);
 
-        return \Response::json($payload);
+        return Response::json($payload);
     }
 
-    public function refreshToken(Request $request)
+    public function refreshToken(Request $request): JsonResponse
     {
         if (! $request->hasHeader('authorization') and ! $request->input('token')) {
             throw new JWTMismatchException('Please provide an Auth Token!');
@@ -54,17 +57,17 @@ abstract class HoldorController extends Controller {
 
         $payload = $this->generateResponsePayload($user);
 
-        return \Response::json($payload);
+        return Response::json($payload);
     }
 
-    protected function generateResponsePayload($user) {
+    protected function generateResponsePayload($user): array {
         $tokenPayload = $this->getTokenPayload($user);
 
         $token = $this->JWTHelper->issue($tokenPayload);
 
         $refreshTokenPayload = array_merge($tokenPayload, ['type' => 'refresh']);
 
-        $refreshToken = $this->JWTHelper->issue(refreshTokenPayload, config('holdor.refresh_expire'), 0);
+        $refreshToken = $this->JWTHelper->issue($refreshTokenPayload, config('holdor.refresh_expire'), 0);
 
         $additionalPayload = $this->getResponseAdditionalPayload($user);
 
@@ -75,11 +78,11 @@ abstract class HoldorController extends Controller {
         ]);
     }
 
-    abstract protected function getUserByRequest(Request $request);
+    abstract protected function getUserFromRequest(Request $request);
 
     abstract protected function getUserById($userId);
 
-    abstract protected function getTokenPayload($user);
+    abstract protected function getTokenPayload($user): array;
 
-    abstract protected function getResponseAdditionalPayload($user);
+    abstract protected function getResponseAdditionalPayload($user): array;
 }

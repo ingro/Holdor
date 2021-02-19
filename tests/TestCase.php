@@ -3,6 +3,7 @@
 
 namespace Ingruz\Holdor\Test;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TestController;
 use App\Models\User;
 use Illuminate\Contracts\Http\Kernel;
@@ -37,6 +38,10 @@ class TestCase extends OrchestraTestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+
+        $app['config']->set('holdor.token_expire', 3600);
+        $app['config']->set('holdor.token_secret', 'abcd');
+        $app['config']->set('holdor.refresh_expire', 7200);
     }
 
     // protected function resolveApplicationExceptionHandler($app)
@@ -54,6 +59,9 @@ class TestCase extends OrchestraTestCase
         Route::group(['middleware' => 'holdor'], function() {
             Route::get('/protected', [TestController::class, 'getSecret']);
         });
+
+        Route::post('/auth', [AuthController::class, 'issueToken']);
+        Route::post('/refresh', [AuthController::class, 'refreshToken']);
     }
 
     protected function setUpDatabase($app)

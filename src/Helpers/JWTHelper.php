@@ -22,7 +22,9 @@ class JWTHelper
     public function issue($params = [], $expire = null, $after = 0)
     {
         $signer = new Sha256();
-        $time = time();
+        $now = now();
+
+        $time = $now->format('U');
 
         if ($expire === null) {
             $expire = config('holdor.token_expire');
