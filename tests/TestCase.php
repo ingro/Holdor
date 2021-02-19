@@ -30,24 +30,19 @@ class TestCase extends OrchestraTestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('app.debug', true);
+        $app->config->set('app.debug', true);
 
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
+        $app->config->set('database.default', 'testbench');
+        $app->config->set('database.connections.testbench', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
             'prefix'   => '',
         ]);
 
-        $app['config']->set('holdor.token_expire', 3600);
-        $app['config']->set('holdor.token_secret', 'abcd');
-        $app['config']->set('holdor.refresh_expire', 7200);
+        $app->config->set('holdor.token_expire', 3600);
+        $app->config->set('holdor.token_secret', 'abc');
+        $app->config->set('holdor.refresh_expire', 7200);
     }
-
-    // protected function resolveApplicationExceptionHandler($app)
-    // {
-    //     $app->singleton('Illuminate\Contracts\Debug\ExceptionHandler', 'Orchestra\Testbench\Exceptions\Handler');
-    // }
 
     protected function setupHoldor($app)
     {
@@ -66,28 +61,18 @@ class TestCase extends OrchestraTestCase
 
     protected function setUpDatabase($app)
     {
-        $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('password');
-            $table->timestamps();
-        });
+        $this->loadLaravelMigrations(['--database' => 'testbench']);
 
-        $user = new User();
+        User::create([
+            'name' => 'Foo Bar',
+            'email' => 'foo@example.com',
+            'password' => 'password'
+        ]);
 
-        $user->name = 'Foo Bar';
-        $user->email = 'foo@example.com';
-        $user->password = 'password';
-
-        $user->save();
-
-        $user = new User();
-
-        $user->name = 'Jon Doe';
-        $user->email = 'jon@example.com';
-        $user->password = 'password';
-
-        $user->save();
+        User::create([
+            'name' => 'Jon Doe',
+            'email' => 'jon@example.com',
+            'password' => 'password'
+        ]);
     }
 }
