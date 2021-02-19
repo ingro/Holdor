@@ -12,6 +12,6 @@ class TestController extends Controller
 {
     public function getSecret(): JsonResponse
     {
-        return Response::json(['foo' => 'bar']);
+        return Response::json(['name' => \Auth::user()->name]);
     }
 }

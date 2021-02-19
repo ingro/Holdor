@@ -32,7 +32,11 @@ class HoldorMiddleware
         }
 
         // Auth as the user id included in the token
-         \Auth::loginUsingId($token->getClaim('userId'));
+        $user = \Auth::loginUsingId($token->getClaim('userId'));
+
+        if ($user === false) {
+            throw new JWTMismatchException('Please provide a valid Auth Token for the given user!');
+        }
 
         return $next($request);
     }
